@@ -10,9 +10,9 @@
 
 
 
-<meta name="date" content="2022-06-20" />
+<meta name="date" content="2022-06-21" />
 
-<title>day0620</title>
+<title>2022-06-21 메모(6장)</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -362,144 +362,248 @@ pre code {
 
 
 
-<h1 class="title toc-ignore">day0620</h1>
-<h4 class="date">2022-06-20</h4>
+<h1 class="title toc-ignore">2022-06-21 메모(6장)</h1>
+<h4 class="date">2022-06-21</h4>
 
 </div>
 
 
-<div id="장" class="section level2">
-<h2>3장</h2>
+<div id="장" class="section level1">
+<h1>6장</h1>
+<div id="데이터-전처리를-위한-도구p.98" class="section level2">
+<h2>데이터 전처리를 위한 도구(p.98)</h2>
 <ul>
-<li>벡터의 종류 (숫자형, 정수형, 문자형, 범주형, 논리형) 벡터가
-존재한다. # 범주형 벡터 : 행렬과 비슷한 형태, 연산은 안된다. ex)
-성별:남자, 여자 / 연령대:청년, 중년, 고령 의 범주를 만들어서 남자청년,
-여자중년 등의 값을 만들어내는 벡터 #논리형 벡터 : 참(TRUE),
-거짓(FALSE)이라는 논리값으로 구성된 데이터. 논리값은 ’,” 없이 대문자로
-쓴다.</li>
+<li><p>dplyr : 10GB 이내, 매우 쉬움, 처리속도 느림</p></li>
+<li><p>data.table : 50GB 이상, 어려움, 처리속도 빠름</p></li>
+<li><p>dplyr 라이브러리 불러오기</p></li>
 </ul>
-<p>-벡터 종류 확인</p>
-<pre class="r"><code>a&lt;-c(1,2,&quot;유형&quot;,&quot;확인&quot;)
-a</code></pre>
-<pre><code>## [1] &quot;1&quot;    &quot;2&quot;    &quot;유형&quot; &quot;확인&quot;</code></pre>
-<pre class="r"><code>class(a)</code></pre>
-<pre><code>## [1] &quot;character&quot;</code></pre>
-<p>-숫자형 벡터</p>
-<pre class="r"><code>a&lt;-1
-a</code></pre>
-<pre><code>## [1] 1</code></pre>
-<p>[1]은 데이터의 위치가 벡터 중 첫 번째 라는 것을 의미</p>
-<p>-복수의 숫자 벡터</p>
-<pre class="r"><code>a&lt;-c(1,2,3)
-a</code></pre>
-<pre><code>## [1] 1 2 3</code></pre>
-<p>-문자형 벡터</p>
-<pre class="r"><code>a&lt;-&quot;Hello&quot;
-a</code></pre>
-<pre><code>## [1] &quot;Hello&quot;</code></pre>
-<pre class="r"><code>a&lt;-&quot;1&quot;
-a</code></pre>
-<pre><code>## [1] &quot;1&quot;</code></pre>
-<p>여기서 1은 ’숫자형’이 아닌 ’문자형’이다</p>
-<p>-복수의 문자형 벡터</p>
-<pre class="r"><code>a&lt;-c(&quot;Hi&quot;,&quot;Hello&quot;)
-a</code></pre>
-<pre><code>## [1] &quot;Hi&quot;    &quot;Hello&quot;</code></pre>
-<p>-숫자 + 문자 벡터(문자형 벡터로 출력)</p>
-<pre class="r"><code>a&lt;-c(1,2,&quot;Hello&quot;)
-a</code></pre>
-<pre><code>## [1] &quot;1&quot;     &quot;2&quot;     &quot;Hello&quot;</code></pre>
-<pre class="r"><code>a&lt;-c(1,&quot;1&quot;)
-a</code></pre>
-<pre><code>## [1] &quot;1&quot; &quot;1&quot;</code></pre>
-<p>마찬가지로 1, “1” 둘다 문자형으로 출력</p>
-<pre class="r"><code>a &lt;- c(1,2,TRUE,FALSE)
-a</code></pre>
-<pre><code>## [1] 1 2 1 0</code></pre>
-<p>숫자형 + 논리형 벡터라면 숫자형 으로 출력된다.</p>
-<p>-범주형 벡터</p>
-<pre class="r"><code>a&lt;-factor(c(1,2,1,2,3))
-a</code></pre>
-<pre><code>## [1] 1 2 1 2 3
-## Levels: 1 2 3</code></pre>
-<p>1,2,3의 Level이 들어간 범주형 벡터 이다.</p>
-<p>-벡터 만들기</p>
-<pre class="r"><code>no &lt;- c(1,2,3,4,5)
-sex &lt;- c(&quot;male&quot;,&quot;female&quot;,&quot;male&quot;,&quot;male&quot;,&quot;female&quot;)
-korean &lt;- c(87,92,95,81,87)
-
-exam_a &lt;- data.frame(no,sex,korean)
-exam_a</code></pre>
-<pre><code>##   no    sex korean
-## 1  1   male     87
-## 2  2 female     92
-## 3  3   male     95
-## 4  4   male     81
-## 5  5 female     87</code></pre>
-<p>-data.frame() 에서 한번에 만들기</p>
-<pre class="r"><code>exam_b &lt;- data.frame(no=c(1,2,3,4,5),
-                    sex=c(&quot;male&quot;,&quot;female&quot;,&quot;male&quot;,&quot;male&quot;,&quot;female&quot;),
-                    korean=c(87,92,95,81,87))
-exam_b</code></pre>
-<pre><code>##   no    sex korean
-## 1  1   male     87
-## 2  2 female     92
-## 3  3   male     95
-## 4  4   male     81
-## 5  5 female     87</code></pre>
-<p>-열 추가하기</p>
-<pre class="r"><code>science &lt;- c(82,93,90,80,88) #science벡터 만들기
-exam_c &lt;- data.frame(no, sex, korean, science) #science 변수 추가
-exam_c</code></pre>
-<pre><code>##   no    sex korean science
-## 1  1   male     87      82
-## 2  2 female     92      93
-## 3  3   male     95      90
-## 4  4   male     81      80
-## 5  5 female     87      88</code></pre>
-<p>-데이터의 위치 : 객체 이름[행,열]</p>
-<pre class="r"><code>exam_c[2,3] #exam_c 데이터에서 2행(2),3열(korean)의 값을 출력</code></pre>
-<pre><code>## [1] 92</code></pre>
-<pre class="r"><code>exam_c[2,&quot;science&quot;] #열의 색인번호 대신 이름을 쓴 경우</code></pre>
-<pre><code>## [1] 93</code></pre>
-<p>-복수 데이터 출력</p>
-<pre class="r"><code>exam_c[c(4,5),c(2,3)] #(4,5번 학생)의 (성별,국어성적)을 출력</code></pre>
-<pre><code>##      sex korean
-## 4   male     81
-## 5 female     87</code></pre>
-<p>-전체 행, 열의 데이터 출력</p>
-<pre class="r"><code>exam_c[3,] #[3번 학생]의 모든 정보 출력</code></pre>
-<pre><code>##   no  sex korean science
-## 3  3 male     95      90</code></pre>
-<pre class="r"><code>exam_c[,4] #모든 [science] 성적 출력</code></pre>
-<pre><code>## [1] 82 93 90 80 88</code></pre>
-<p>-연속 데이터 출력</p>
-<pre class="r"><code>exam_c[c(1:3,5),c(2,3)] #(1,2,3,5번 학생)의 (성별,국어성적)을 출력</code></pre>
-<pre><code>##      sex korean
-## 1   male     87
-## 2 female     92
-## 3   male     95
-## 5 female     87</code></pre>
-<p>-필요없는 데이터 제거</p>
-<pre class="r"><code>exam_c[c(-4,-5),-2] #(4,5번 학생을 제외한) 학생들의 (성별을 제외한) 벡터 값 출력</code></pre>
-<pre><code>##   no korean science
-## 1  1     87      82
-## 2  2     92      93
-## 3  3     95      90</code></pre>
-<pre class="r"><code>exam_c[-c(4,5),-2] #c 앞에 -를 붙여도 된다.</code></pre>
-<pre><code>##   no korean science
-## 1  1     87      82
-## 2  2     92      93
-## 3  3     95      90</code></pre>
-<p>-특정 변수 출력</p>
-<pre class="r"><code>exam_c$science #science 값 출력</code></pre>
-<pre><code>## [1] 82 93 90 80 88</code></pre>
-<pre class="r"><code>str(exam_c) #데이터의 모든 유형 확인가능</code></pre>
-<pre><code>## &#39;data.frame&#39;:    5 obs. of  4 variables:
-##  $ no     : num  1 2 3 4 5
-##  $ sex    : chr  &quot;male&quot; &quot;female&quot; &quot;male&quot; &quot;male&quot; ...
-##  $ korean : num  87 92 95 81 87
-##  $ science: num  82 93 90 80 88</code></pre>
+<pre class="r"><code>install.packages(&quot;dplyr&quot;,repos = &quot;http://cran.us.r-project.org&quot;)</code></pre>
+<pre><code>## 패키지 &#39;dplyr&#39;를 성공적으로 압축해제하였고 MD5 sums 이 확인되었습니다</code></pre>
+<pre><code>## Warning: 패키지 &#39;dplyr&#39;의 이전설치를 삭제할 수 없습니다</code></pre>
+<pre><code>## Warning in file.copy(savedcopy, lib, recursive = TRUE): E:
+## \R\R-4.2.0\library\00LOCK\dplyr\libs\x64\dplyr.dll를 E:
+## \R\R-4.2.0\library\dplyr\libs\x64\dplyr.dll로 복사하는데 문제가 발생했습니다:
+## Permission denied</code></pre>
+<pre><code>## Warning: &#39;dplyr&#39;를 복구하였습니다</code></pre>
+<pre><code>## 
+## 다운로드된 바이너리 패키지들은 다음의 위치에 있습니다
+##  C:\Users\Administor\AppData\Local\Temp\RtmpQzSLKW\downloaded_packages</code></pre>
+<pre class="r"><code>library(dplyr)</code></pre>
+<pre><code>## 
+## 다음의 패키지를 부착합니다: &#39;dplyr&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     filter, lag</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     intersect, setdiff, setequal, union</code></pre>
+<ul>
+<li>%&gt;% : 파이프 연산자(코드와 코드를 이어줌 ctrl+shift+m)</li>
+</ul>
+<pre class="r"><code>mpg1 &lt;- read.csv(&quot;mpg1.csv&quot;)
+str(mpg1)</code></pre>
+<pre><code>## &#39;data.frame&#39;:    234 obs. of  5 variables:
+##  $ manufacturer: chr  &quot;audi&quot; &quot;audi&quot; &quot;audi&quot; &quot;audi&quot; ...
+##  $ trans       : chr  &quot;auto&quot; &quot;manual&quot; &quot;manual&quot; &quot;auto&quot; ...
+##  $ drv         : chr  &quot;f&quot; &quot;f&quot; &quot;f&quot; &quot;f&quot; ...
+##  $ cty         : int  18 21 20 21 16 18 18 18 16 20 ...
+##  $ hwy         : int  29 29 31 30 26 26 27 26 25 28 ...</code></pre>
+<pre class="r"><code>data2 &lt;- mpg1 %&gt;% 
+  select(drv,cty,hwy) %&gt;% 
+  filter(drv == &quot;f&quot;)        # filter : 조건에 맞는 행 추출</code></pre>
+<ul>
+<li>파이프 연산자 안 쓸 경우</li>
+</ul>
+<pre class="r"><code>data3 &lt;- select(mpg1, drv, cty, hwy)
+data3 &lt;- filter(data3, drv == &quot;f&quot;)  #이렇게 쭉 이어 붙여야 한다..</code></pre>
+<ul>
+<li>rename() : 변수 이름 바꿔주기</li>
+</ul>
+<pre class="r"><code>#기존데이터 &lt;- 새 데이터 %&gt;% rename(새 이름1=기존 이름1, 새 이름2=기존 이름2,...)</code></pre>
+<ul>
+<li>count() : table()함수와 같지만 count()함수는 데이터프레임</li>
+<li>table()함수는 테이블 형태로 출력</li>
+</ul>
+<pre class="r"><code>count(mpg1, trans)  #mpg1의 데이터 중 trans 항목의 빈도 수</code></pre>
+<pre><code>##    trans   n
+## 1   auto 157
+## 2 manual  77</code></pre>
+<pre class="r"><code>class(count(mpg1, trans)) # count()는 데이터프레임 형태</code></pre>
+<pre><code>## [1] &quot;data.frame&quot;</code></pre>
+<ul>
+<li>table() 함수는 데이터세트$변수 이다.</li>
+</ul>
+<pre class="r"><code>table(mpg1$trans)  #mpg1의 데이터 중 trans 항목의 빈도 수</code></pre>
+<pre><code>## 
+##   auto manual 
+##    157     77</code></pre>
+<pre class="r"><code>class(table(mpg1$trans)) # table()은 테이블 형태</code></pre>
+<pre><code>## [1] &quot;table&quot;</code></pre>
+<ul>
+<li>select : 필요한 열 추출</li>
+</ul>
+<pre class="r"><code>#새 데이터세트 &lt;- 데이터세트 %&gt;% select(열1, 열2, ...)
+mpg1_1 &lt;- mpg1 %&gt;% select(manufacturer, trans,cty)  #manufacturer,trans,cty 열만 추출</code></pre>
+<ul>
+<li>열 삭제 응용(select 함수 안에 -c 함수로 삭제할 열을 입력)</li>
+</ul>
+<pre class="r"><code>mpg1_2 &lt;- mpg1 %&gt;% select(-c(cty,hwy))  #cty,hwy 열이 삭제됨</code></pre>
+<ul>
+<li>slice : 필요한 행 추출</li>
+</ul>
+<pre class="r"><code>mpg1 %&gt;% slice(1,4,5)  #1,4,5번 행을 추출한다. 연속적인 행이면 a:b로도 가능</code></pre>
+<pre><code>##   manufacturer trans drv cty hwy
+## 1         audi  auto   f  18  29
+## 2         audi  auto   f  21  30
+## 3         audi  auto   f  16  26</code></pre>
+<ul>
+<li>filter : 조건에 맞는 행 추출 예시1</li>
+</ul>
+<pre class="r"><code>mpg1_hd1 &lt;- mpg1 %&gt;% filter(manufacturer==&quot;hyundai&quot;) #manufacturer가 &#39;hyundai&#39;인 행을 추출한다.</code></pre>
+<ul>
+<li>예시2</li>
+</ul>
+<pre class="r"><code>mpg1 %&gt;% filter(cty==max(cty))      #cty의 최댓값 함수를 바로 대입하거나,</code></pre>
+<pre><code>##   manufacturer  trans drv cty hwy
+## 1   volkswagen manual   f  35  44</code></pre>
+<pre class="r"><code>max(mpg1$cty)                       #cty의 최댓값을 구한 뒤</code></pre>
+<pre><code>## [1] 35</code></pre>
+<pre class="r"><code>mpg1 %&gt;% filter(cty==35)            #cty의 최댓값이 35일 때, cty의 값이 35인 행을 추출한다.</code></pre>
+<pre><code>##   manufacturer  trans drv cty hwy
+## 1   volkswagen manual   f  35  44</code></pre>
+<ul>
+<li>비교값이 다른 데이터 추출</li>
+</ul>
+<pre class="r"><code>mpg1_hd2 &lt;- mpg1 %&gt;% filter(manufacturer != &quot;hyundai&quot;)  #manufacturer가 &#39;hyundai&#39;가 아닌 행을 추출한다.</code></pre>
+<ul>
+<li>비교값이 크거나 작은 데이터 추출</li>
+</ul>
+<pre class="r"><code>mpg1_hd3 &lt;- mpg1 %&gt;%filter(cty &lt; mean(cty))  #cty값이 평균 미만인 자동차들을 추출한다.</code></pre>
+<ul>
+<li>1사분위수와 비교</li>
+</ul>
+<pre class="r"><code>quantile(mpg1$cty) </code></pre>
+<pre><code>##   0%  25%  50%  75% 100% 
+##    9   14   17   19   35</code></pre>
+<pre class="r"><code>mpg1_hd4 &lt;- mpg1 %&gt;% filter(cty&lt;=14)  #cty값이 cty값의 1사분위값보다 작거나 같은 자동차들을 추출한다.</code></pre>
+<ul>
+<li><p>크거나 같거나 수학연산자를 사용한다.(&lt;=, &gt;, !=, …)</p></li>
+<li><p>’manufacturer==“honda”|manufacturer==“nissan”|manufacturer==“subaru”|manufacturer==“toyota”’는</p></li>
+<li><p>’manufacturer %in% c(“honda”, “nissan”, “subaru”, “toyota”)’로
+해도 된다.</p></li>
+</ul>
+<pre class="r"><code># %in% c()로 한번에 묶기
+# %&gt;% 이 아니라 %in% 이다.
+mpg1_hd5 &lt;- mpg1 %&gt;% filter(manufacturer %in% c(&quot;honda&quot;, &quot;nissan&quot;, &quot;subaru&quot;, &quot;toyota&quot;)) </code></pre>
+<ul>
+<li>glimpse() : 데이터 미리보기</li>
+<li>mutate() : 새로운 파생변수 항목 만들기</li>
+</ul>
+<pre class="r"><code># 여러 조건들을 한 뒤에 데이터 미리보기
+# &quot;%&gt;% glimpse()&quot; 대신 &quot;&lt;- iris2&quot; 쓰면 작업한 데이터가 바로 iris2로 저장된다.
+iris %&gt;%
+  filter(Species == &quot;setosa&quot;) %&gt;% 
+  select(Sepal.Length, Sepal.Width) %&gt;% 
+  filter(Sepal.Length &gt; 5.0) %&gt;% 
+  mutate(total = Sepal.Length + Sepal.Width) %&gt;% glimpse()</code></pre>
+<pre><code>## Rows: 22
+## Columns: 3
+## $ Sepal.Length &lt;dbl&gt; 5.1, 5.4, 5.4, 5.8, 5.7, 5.4, 5.1, 5.7, 5.1, 5.4, 5.1, 5.…
+## $ Sepal.Width  &lt;dbl&gt; 3.5, 3.9, 3.7, 4.0, 4.4, 3.9, 3.5, 3.8, 3.8, 3.4, 3.7, 3.…
+## $ total        &lt;dbl&gt; 8.6, 9.3, 9.1, 9.8, 10.1, 9.3, 8.6, 9.5, 8.9, 8.8, 8.8, 8…</code></pre>
+<ul>
+<li>&amp;를 이용하여 반복되는 함수를 줄인다</li>
+</ul>
+<pre class="r"><code>#바로 위의 함수와 같은 함수지만 filter를 &amp;로 정리했다.
+#여러 조건일 때 &amp;는 and, |는 or, !는 not
+iris %&gt;%
+  filter(Species == &quot;setosa&quot; &amp; Sepal.Length &gt; 5.0) %&gt;% 
+  select(Sepal.Length, Sepal.Width) %&gt;% 
+  mutate(total = Sepal.Length + Sepal.Width)</code></pre>
+<pre><code>##    Sepal.Length Sepal.Width total
+## 1           5.1         3.5   8.6
+## 2           5.4         3.9   9.3
+## 3           5.4         3.7   9.1
+## 4           5.8         4.0   9.8
+## 5           5.7         4.4  10.1
+## 6           5.4         3.9   9.3
+## 7           5.1         3.5   8.6
+## 8           5.7         3.8   9.5
+## 9           5.1         3.8   8.9
+## 10          5.4         3.4   8.8
+## 11          5.1         3.7   8.8
+## 12          5.1         3.3   8.4
+## 13          5.2         3.5   8.7
+## 14          5.2         3.4   8.6
+## 15          5.4         3.4   8.8
+## 16          5.2         4.1   9.3
+## 17          5.5         4.2   9.7
+## 18          5.5         3.5   9.0
+## 19          5.1         3.4   8.5
+## 20          5.1         3.8   8.9
+## 21          5.1         3.8   8.9
+## 22          5.3         3.7   9.0</code></pre>
+<ul>
+<li>group_by(trans) : trans 변수안의 범주로 행을 분류한다.</li>
+<li>summarise(m = mean(cty)) : cty의 평균을 m이라는 변수에 넣는다.</li>
+</ul>
+<pre class="r"><code>#&#39;group_by()&#39; 함수랑 &#39;summarise()&#39; 함수는 한 세트로 생각
+mpg1 %&gt;% 
+  group_by(trans) %&gt;% 
+  summarise(avg     = mean(cty)   # 평균
+            , total = sum(cty)    # 총합
+            , med   = median(cty) # 중간값
+            , count = n())        # 빈도</code></pre>
+<pre><code>## # A tibble: 2 × 5
+##   trans    avg total   med count
+##   &lt;chr&gt;  &lt;dbl&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;
+## 1 auto    16.0  2507    16   157
+## 2 manual  18.7  1438    18    77</code></pre>
+<ul>
+<li><p>n() : 데이터숫자를 세어 빈도를 알려준다.(count함수와
+비슷함.)</p></li>
+<li><p>count() 함수와 summarise(n=n()) 함수는 결과값은 같지만,
+count()함수는 summarise()함수같이 여러 명령을 수행할 수 없고,
+summarise(n=n())함수는 여러 명령을 수행할 수 있다.</p></li>
+</ul>
+<pre class="r"><code>count(mpg1, trans)  #짧지만 여러 명령은 불가능..</code></pre>
+<pre><code>##    trans   n
+## 1   auto 157
+## 2 manual  77</code></pre>
+<pre class="r"><code>mpg1 %&gt;% 
+  group_by(trans) %&gt;% 
+  summarise(n=n())  #summarise(n=n()) 함수가 더 길지만, 여러 명령을 붙일 때 빛을 본다.</code></pre>
+<pre><code>## # A tibble: 2 × 2
+##   trans      n
+##   &lt;chr&gt;  &lt;int&gt;
+## 1 auto     157
+## 2 manual    77</code></pre>
+<ul>
+<li>group_by() + summarise(n())+ mutate()의 조합</li>
+</ul>
+<pre class="r"><code>mpg1 %&gt;% 
+  group_by(trans) %&gt;%       #trans범주로 분류
+  summarise(n=n()) %&gt;%      #trans범주별 데이터 빈도 구하기
+    mutate(total=sum(n),    #trans범주별 빈도의 총계 구하기
+          pct=n/total*100)  #trans범주별 비율 구하기</code></pre>
+<pre><code>## # A tibble: 2 × 4
+##   trans      n total   pct
+##   &lt;chr&gt;  &lt;int&gt; &lt;int&gt; &lt;dbl&gt;
+## 1 auto     157   234  67.1
+## 2 manual    77   234  32.9</code></pre>
+<ul>
+<li>if, else : if에 조건과 명령문을 쓰고, else에 다른 명령을 쓴다.</li>
+</ul>
+<pre class="r"><code>#if(조건) {명령문A} else {명령문B}
+#&quot;조건이 참이면 명령문A를 수행하고, 아니면 명령문B를 수행하라&quot;</code></pre>
+<ul>
+<li>ifelse() : if조건에 참이면 수행하고, 거짓이면 else를 해라.
+if+else</li>
+</ul>
+<pre class="r"><code>a &lt;- c(1,3,4,6,9)
+ifelse(a%%2==0, &quot;짝수&quot;, &quot;홀수&quot;)  #ifelse 함수는 벡터연산 가능</code></pre>
+<pre><code>## [1] &quot;홀수&quot; &quot;홀수&quot; &quot;짝수&quot; &quot;짝수&quot; &quot;홀수&quot;</code></pre>
+</div>
 </div>
 
 

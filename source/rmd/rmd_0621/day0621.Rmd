@@ -1,0 +1,203 @@
+---
+title: "2022-06-21 메모(5장)"
+output:
+  html_document:
+    keep_md: true
+date: '2022-06-21'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# 5장
+### 산술연산자
+```{r}
+# "+" : 덧셈
+# "-" : 뺄셈
+# "*" : 곱셈
+# "/" : 나누기
+# "%/%" : 몫
+# "%%" : 나머지
+# "^" : 제곱
+```
+
+
+
+- 숫자형, 정수형 벡터에도 연산이 가능하다
+```{r}
+a<-c(1,3,4)
+a*3
+```
+```{r}
+a^2
+```
+
+### 비교연산자
+```{r}
+# == : 같다
+# != : 다르다
+# > : 크다
+# >= : 크거나 같다
+# < : 작다
+# <= :작거나 같다
+```
+
+- a:z : a부터 z까지를 의미
+- seq(a,z,by=2) : a부터 z까지 2씩 증가
+```{r}
+seq(1,9,by=2)
+```
+- 3씩 감소
+```{r}
+seq(9,1,by=-3)
+```
+
+- rep(x,each=2,times=3) : x를 각각 2번 반복하고, 그  결과를 3번 반복출력
+```{r}
+rep(c(1,2),each=2,times=2)
+```
+
+### 논리 연산자
+```{r}
+# | : (엔키 위에 원화표시)합집합 "or"의 개념
+# & : 교집합 "and"의 개념
+# ! : 제외할 때, "not"의 개념
+```
+
+
+
+### 데이터세트 구조 함수
+- head(,2) : 앞에서 2개 행만 출력
+```{r}
+head(iris,2)
+```
+- tail(,2) : 뒤에서 2개 행만 출력
+```{r}
+tail(iris,2)
+```
+- str() : 데이터 전체 구조 및 유형 출력
+```{r}
+str(iris)
+```
+- View() : 엑셀 형식으로 출력
+```{r}
+View(iris)
+```
+- dim() : 행과 열의 갯수 출력
+```{r}
+dim(iris)
+```
+- length() : 열의 개수 출력
+```{r}
+length(iris)
+```
+- class() : 유형 출력
+```{r}
+class(iris)
+```
+- ls() : 벡터 이름을 출력
+```{r}
+ls(iris)
+```
+
+# 데이터 불러오기
+# 경로 설정이 매우 중요
+- getwd() 현재 경로 설정된 곳 보기
+- setwd("C:/") 이 경로로 설정
+
+
+# p.91
+
+- stringsAsFactors -> 범주형 벡터로 바꿀것인가?
+```{r}
+mpg1<- read.csv("mpg1.csv", stringsAsFactors=F)  #문자형 벡터로 출력, T이면 범주형 벡터로 출력
+str(mpg1)
+```
+
+
+## 평균
+-  평균
+```{r}
+mean(mtcars$mpg)   #mtcars$mpg의 평균
+```
+- 분산
+```{r}
+var(mtcars$mpg)   #mtcars$mpg의 분산
+```
+- 표준편차
+```{r}
+sd(mtcars$mpg)   #mtcars$mpg의 표준편차
+```
+
+
+- 수리통계 --> 증명(대학원 가라)
+- 일반인 / 비전공자 --> 활용 / 의미 정도 파악
+
+
+- iris 데이터의 5개 범주별 통계량
+```{r}
+summary(iris)
+```
+- iris 데이터의 Sepal.Length 항목의 통계량
+```{r}
+summary(iris$Sepal.Length)
+```
+
+
+### 범주별 빈도 분석
+
+- trans 항목의 범주별 '빈도' 분석
+```{r}
+table(mpg1$trans)
+```
+- manufacturer 항목의 범주별 '빈도' 분석
+```{r}
+table(mpg1$manufacturer)
+```
+
+- trans와 manufacturer 항목을 합쳐 '빈도' 만들기
+```{r}
+table(mpg1$trans, mpg1$manufacturer)
+```
+
+### 빈도의 비율 구하기
+- trans 항목의 '비율'구하기(a라는 변수에 입력해야함)
+```{r}
+a <- table(mpg1$trans)
+prop.table(a)
+```
+- 백분율로 나타내고 싶다면 100을 곱해준다
+```{r}
+prop.table(a)*100
+```
+- trans와 drv 항목을 합쳐 '비율' 구하기
+```{r}
+b <- table(mpg1$trans, mpg1$drv)   
+prop.table(b)
+```
+ 
+```{r}
+prop.table(table(mpg1$manufacturer))   #함수 지정이 귀찮다면 이렇게 바로 써도 된다.
+# prop.table(mpg1$manufacturer) <-- 에러
+# table안에table 안 넣으면 에러
+```
+
+### 행과 열의 비율 형식 맞춘다
+- 가로 합을 1로 두고 계산한 비율
+```{r}
+prop.table(b, margin = 1)
+```
+- 세로 합을 1로 두고 계산한 비율
+```{r}
+prop.table(b, margin = 2)
+```
+
+#### 소수점 아래 자리 지정
+- round는 반올림
+```{r}
+round(0.32123141,2)  #(,뒤는 자릿수)
+```
+```{r}
+round(prop.table(table(mpg1$trans)),3) #이렇게 써도 가능
+```
