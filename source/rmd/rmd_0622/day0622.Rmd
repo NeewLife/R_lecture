@@ -1,0 +1,180 @@
+---
+title: "7장"
+output:
+  html_document:
+    keep_md: true
+date: '2022-06-22'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# 7장
+### 라이브러리 불러오기
+- 작업할 때 항상 라이브러리 불러오기
+```{r}
+library(dplyr)
+glimpse(iris)
+```
+
+### 데이터 불러오기
+```{r}
+exam_na <- read.csv("data/exam_na.csv")
+str(exam_na)
+```
+### (1) 결측치 확인
+- is.na() : 결측치가 있습니까? / TRUE or FALSE
+```{r}
+is.na(exam_na)  # TRUE 가 결측치
+```
+
+
+### (2) 결측치 빈도 구하기
+- table(is.na()) : 빈도 구하기
+```{r}
+table(is.na(exam_na))          #FALSE 는 결측치가 아닌것, TRUE 는 결측치
+```
+- korean 항목의 결측치 구하기
+```{r}
+table(is.na(exam_na$korean))
+```
+- 변수별로 결측치 빈도 구하기
+```{r}
+summary(is.na(exam_na))
+```
+- 결측치 포함한 전체 통계
+```{r}
+summary(exam_na)   # NA's 값이 결측치의 개수
+```
+
+# 결측치 처리 방법
+### (1) 제거하고 처리하기
+- na.rm = T : 'rm'은 remove의 약자. 즉, 결측치를 제거 할 것이냐는 함수
+```{r}
+mean(exam_na$korean, na.rm = TRUE)  #TRUE는 제거, FALSE는 제거 안함
+```
+- na.omit() : 결측치가 있는 행을 모두 제거
+  +가급적 쓰지 말 것
+- filter() 함수 활용
+  + (!is.na(korean))
+```{r}
+exam_na %>% filter(is.na(korean))   #결측치가 있는 열
+```
+- 이번에는 !is.na(korean))을 활용한다
+```{r}
+exam_na %>% filter(!is.na(korean))  #!는 not의 의미
+```
+
+
+### (2) 다른 값으로 대체하기
+- imputation 참고자료
+  + https://www.kdnuggets.com/2017/09/missing-data-imputation-using-r.html
+  + [R 결측치(NA) 제거, 대체 방법](https://velog.io/@lifeisbeautiful/R-%EA%B2%B0%EC%B8%A1%EA%B0%92NA-%EC%A0%9C%EA%B1%B0-%EB%8C%80%EC%B2%B4-%EB%B0%A9%EB%B2%95)
+
+#### 평균 입력
+- ifelse()를 이용할 때
+```{r}
+exam_na$korean   # korean 성적에서 4번째가 NA
+   
+```
+- 결측값을 제외한 값의 평균 구하기
+```{r}
+mean(exam_na$korean, na.rm = TRUE)
+```
+- 결측값에 평균 입력
+```{r}
+exam_na$korean <- ifelse(is.na(exam_na$korean),90.25,exam_na$korean)  #ifelse()함수 이용
+```
+- korean 성적 확인
+```{r}
+exam_na$korean 
+```
+
+
+## 이상치
+- 데이터의 특정 값이 뭔가 '이상'이 있다.
+- Case 1 : 정해진 범주에서 벗어난 데이터
+  + 2000년 4월 30일 / 2000년 40월 30일 ---> 9999
+- Case 2 : 숫자 / 아웃라이어(Outlier) / 극단값
+  + 평균임금 320만원 / 손흥민 몇십억원?
+
+-자료 불러오기
+```{r}
+mpg1_out <- read.csv("data/mpg1_out.csv")
+glimpse(mpg1_out)
+```
+
+- trans의 갯수를 구하자.
+```{r}
+table(mpg1_out$trans)
+```
+- 쉽게 하는 방법
+```{r}
+mpg1_out %>% filter(trans != 3)
+```
+
+- ifelse
+```{r}
+mpg1_out$trans <- ifelse(mpg1_out$trans == 3, NA, mpg1_out$trans)
+# trans의 값이 3이면 결측치(NA)로 바꿔주고, 아니면 그대로 두어라
+table(is.na(mpg1_out$trans))
+```
+
+- 결측치 제거
+```{r}
+result <- mpg1_out %>% filter(!is.na(trans))  # 결측치가 아닌 것들을 'result' 데이터로 지정
+```
+- 결측치가 아닌 것들을 표현
+```{r}
+table(is.na(result$trans)) 
+```
+
+
+### 극단치 처리
+- 숫자 데이터 boxplot()
+- boxplot() 함수를 통해서 극단치가 있는지 없는 확인지 가능
+- IQR : 1사분위 ~ 3사분위
+- 경계값 : IQR + IQR * 1.5 상한/ IQR - IQR * 1.5
+```{r}
+mpg1 <- read.csv("data/mpg1.csv")
+boxplot(mpg1$cty)
+```
+
+- cty 변수의 통계값
+```{r}
+boxplot(mpg1$cty)$stats
+```
+- cty와 hwy의 통계값
+```{r}
+boxplot(mpg1$cty, mpg1$hwy)$stats 
+```
+- drv 범주별 cty 통계값
+```{r}
+boxplot(mpg1$cty~mpg1$drv)$stats 
+```
+- cty의 극단치 기준 알아보기
+```{r}
+boxplot(mpg1$cty)$stats      
+```
+- ifelse함수를 활용한다
+```{r}
+mpg1$cty <- ifelse(mpg1$cty>26|mpg1$cty<9, NA, mpg1$cty)
+# cty 값이 26 초과, 9 미만인 경우에 결측치(NA)로 처리하고, 아닌경우 그대로 둔다.
+
+
+```
+- 결측치 확인
+```{r}
+table(is.na(mpg1$cty))
+```
+- 결측치를 제외한 cty 평균 구하기
+```{r}
+mean(mpg1$cty,na.rm = TRUE)  
+```
+- 또는 이렇게 쓸 수도 있다
+```{r}
+mpg1$cty <- ifelse(mpg1$cty>=9 & mpg1$cty<=26, mpg1$cty, NA)
+# cty 값이 9 이상 26 이하인 경우 그대로 두고, 아닌경우 결측치(NA)로 처리한다.
+```
+
