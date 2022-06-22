@@ -1,0 +1,212 @@
+---
+title: "9장"
+output:
+  html_document:
+    keep_md: true
+date: '2022-06-22'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# 9장
+## ggplot2 강의
+- 데이터 불러오기
+```{r}
+library(readxl)
+library(ggplot2)
+who_disease <- read_xlsx("data/who_disease.xlsx")
+```
+- 기본 시각화
+```{r}
+# x축에 year, y축에 cases 라는 값을 넣겠다.
+ggplot(who_disease, aes(x = year, y = cases)) +
+  #그래프 종류
+  geom_point()
+```
+
+- 옵션 변화 주기(투명도)
+```{r}
+ggplot(who_disease, aes(x = year, y = cases)) +
+  #그래프 종류
+  geom_point(alpha = 0.1)  # alpha 는 투명도
+```
+
+- 옵션 색상 변화
+```{r}
+ggplot(who_disease, aes(x = year, y = cases)) +
+  #그래프 종류
+  geom_point(alpha = 0.1, colour = "#A243F5")  # "#A243F5" 색상으로 변경
+```
+
+- colour 입력 위치
+  + geom_point(colour="red")       ->  색상명 작성
+  + aes(x, y, colour = 컬럼이름)   ->  aes 안에는 컬럼 이름작성
+  
+```{r}
+str(iris)
+ggplot(iris, aes(x = Sepal.Length,
+                 y = Sepal.Width,
+                 colour = Species,
+                 size = Petal.Length)) +
+  geom_point()
+```
+
+- 원하는 색상값 참조 사이트
+  + https://color.adobe.com/ko/create/color-wheel
+
+- 산점도 : x축 수치형 연속형 데이터, y축 수치형 연속형 데이터
+- 연속형 데이터 : 숫자 같이 연속하는 데이터
+- 이산형 데이터 : 문자 같이 연속하지 않는 데이터
+```{r}
+ggplot(who_disease, aes(x = year, y = cases)) +
+  #그래프 종류
+  geom_point(alpha = 0.1)
+```
+
+- 커널 밀도 곡선
+```{r}
+ggplot(data=diamonds, aes(x=carat))+
+  geom_density()
+```
+
+- 상자 그래프
+  + 전체 데이터 기준의 그림
+```{r}
+ggplot(data=diamonds, aes(x=1, y=price))+  #통상 x값에 1을 부여한다
+  geom_boxplot()
+```
+
+  + 범주형 변수 기준의 그림
+```{r}
+ggplot(data=diamonds,aes(x=cut,y=price))+
+  geom_boxplot()
+```
+
+- 선 그래프
+  + 속도에 따른 제동거리의 그래프
+```{r}
+ggplot(data=cars, aes(x=speed,y=dist))+
+  geom_line()
+```
+
+  + 실업자수 변화 그래프
+```{r}
+ggplot(data=economics,aes(x=date,y=unemploy))+
+  geom_line()
+```
+
+  + 개인 저축률 변화
+```{r}
+ggplot(data=economics,aes(x=date, y=psavert))+
+  geom_line()
+```
+  
+  + 두 선 그래프를 연결해서 그리기
+```{r}
+ggplot()+
+  geom_line(data=economics,aes(x=date,y=uempmed,color="red"))+
+  geom_line(data=economics,aes(x=date,y=psavert,color="blue"))
+# 빨간색이 주당평균실업기간
+# 파란색이 개인저축률
+```
+  
+- 히스토그램
+  + 질병데이터 
+    region = AMR, year = 1980, disease = 백일해(pertussis)
+    cases > 0
+```{r}
+library(dplyr)
+str(who_disease)
+who_disease %>% 
+  filter(region == 'AMR',
+         year == 1980,
+         disease == 'pertussis',
+         cases > 0) -> data2
+```
+- data2 시각화(histogram)
+```{r}
+ggplot(data2, aes(x = cases)) +
+  # 빨간색으로 채운다.
+  geom_histogram(fill = "red")    # 분포가 어느 지역에 몰려 있는지에 집중
+```
+
+- data2 시각화(col)
+```{r}
+ggplot(data2, aes(x =country, y =cases)) +
+  geom_col(fill = "blue") +
+  # 옵션(가로로 그래프 나타내기)
+  coord_flip()
+```
+
+## ggplot() 정교하게 그리기
+- 산점도 그리기
+```{r}
+ggplot(data = diamonds, aes(x = carat, 
+                            y = price, 
+                            col = cut)) +
+  geom_point()
+```
+
+- 막대그래프에 2개 범주 내용 반영하기
+```{r}
+ggplot(diamonds, aes(x = color, fill = cut)) +
+  geom_bar()
+```
+
+- position을 이용한 막대그래프(특정 그래프 모양에만 적용된다)
+```{r}
+ggplot(diamonds, aes(x = color, fill = cut)) +
+  geom_bar(position="dodge")
+```
+```{r}
+ggplot(diamonds, aes(x = color, fill = cut)) +
+  geom_bar(position="fill")
+```
+
+- 선 그래프에 2개 범주 내용 반영
+- 데이터 불러오기
+```{r}
+leisure <- read.csv("data/leisure.csv")
+str(leisure)
+```
+- 연령별 교양오락지출비 그래프 그리기
+```{r}
+ggplot(data=leisure, aes(x=age, y=expense, col = sex)) +
+  geom_line(size=1, linetype=2)   #사이즈, 선 타입 조절
+```
+
+### 막대그래프의 순서 변경
+- reorder()
+```{r}
+mpg1 <- read.csv("data/mpg1.csv",
+                 stringsAsFactors = FALSE)
+
+#데이터 가공
+drv_hwy <- mpg1 %>% 
+  group_by(drv) %>% 
+  summarise(mean_hwy = mean(hwy))
+```
+
+```{r}
+# 기본 그래프
+ggplot(data = drv_hwy, aes(x = drv, 
+                           y = mean_hwy)) +
+  geom_col()
+#오름차순
+ggplot(data = drv_hwy, aes(x = reorder(drv, mean_hwy),  
+                           y = mean_hwy)) +
+  geom_col()
+#내림차순
+ggplot(data = drv_hwy, aes(x = reorder(drv, -mean_hwy), 
+                           y = mean_hwy)) +
+  geom_col() +
+  labs(            # 그래프와 축에 이름 붙이기
+    title = "그래프 제목을 입력하세요",
+    subtitle = "그래프 소제목을 입력하세요",
+    x = "x변수명을 입력하세요",
+    y = "y변수명을 입력하세요",
+    caption = "데이터 출처를 입력하세요"
+  )
+```

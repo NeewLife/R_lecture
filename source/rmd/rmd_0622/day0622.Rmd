@@ -177,4 +177,3 @@ mean(mpg1$cty,na.rm = TRUE)
 mpg1$cty <- ifelse(mpg1$cty>=9 & mpg1$cty<=26, mpg1$cty, NA)
 # cty 값이 9 이상 26 이하인 경우 그대로 두고, 아닌경우 결측치(NA)로 처리한다.
 ```
-
