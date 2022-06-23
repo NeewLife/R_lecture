@@ -1,0 +1,42 @@
+---
+title: "10장"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    keep_md: true
+date: '2022-06-23 10:15:00'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+install.packages("dplyr")
+install.packages("ggplot2")
+library(dplyr)
+library(ggplot2)
+```
+```{r}
+library(readxl)
+seoulair <- read_excel("서울대기오염_2019.xlsx")
+str(seoulair)
+```
+
+- '날짜, 측정소명, 미세먼지, 초미세먼지' 변수추출하기
+```{r}
+seoulair <- seoulair %>% 
+  rename(date="날짜",               # '날짜'를 'date'로 변환
+         district="측정소명",       # '측정소명'을 'district으로 변환
+         pm10="미세먼지",           # '미세먼지'를 'pm10'으로 변한
+         pm2.5="초미세먼지") %>%    # '초미세먼지'를 'pm2.5'로 변환
+  select(date,district,pm10,pm2.5)  # seoulair에 4가지 변수만 새로입력
+```
+
+- date와 district에서 이상치 확인하기
+```{r}
+table(seoulair$date)
+```
+
+
