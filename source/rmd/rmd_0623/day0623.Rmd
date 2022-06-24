@@ -22,8 +22,8 @@ knitr::opts_chunk$set(echo = TRUE)
 - 추론통계 : 변수 간의 관계를 파악 / 새로운 사실을 추정  
 
   + (중요)평균차이 검정
-    - 수치형 데이터
-    - 가설검정 : 각 그룸간의 평균의 차이를 검정
+    - 수치형 데이터 + 범주형 데이터
+    - 가설검정 : 각 그룹간의 평균의 차이를 검정
     ex) '남자'의 평균 키와 '여자'의 평균 키는 "차이"가 있을 것이다.
     - '남자'의 평균 키가 '여자'의 평균 키보다 크다. 라는 결론을 내리려면  
     이번 측정의 결과가 우연한 측정이 아니라는 것을 통계적으로 검정해야된다.  
@@ -178,3 +178,63 @@ cor.test(mpg1$cty, mpg1$hwy)    # 상관관계분석
 - cor(상관관계계수) = 0.9559159 이므로 상관관계가 1에 가까워서 매우 높다.
 - 결론 : "cty와 hwy는 유의미하게 매우 높은 상관관계에 있다."
 
+
+### 회귀분석
+- 기초통계 : 특정한 결과에 영향을 주는 주 요인이 무엇인지 찾는 것
+- 회귀분석과 종료
+  + 1세대 회귀 방법론 : 다항회귀분석, 다중회귀분석, 포아송 회귀분석, etc
+  + 2세대 회귀 방법론 : 구조방정식
+
+- 귀무가설, 대립가설 존재
+  + 귀무가설 : x(=독립변수)가 y(=종속변수)에 영향을 주지 않는다
+  + 대립가설 : x가 y에 영향을 준다
+  
+- lm(종속변수 ~ 독립변수, data)
+  + p-value
+
+```{r}
+RA <- lm(data=mtcars, mpg ~ disp)  # 종속변수 ~ 독립변수+독립변수+...
+summary(RA)
+# 맨 밑의 p-value 값은 전체식에 해당하는 값이다.
+# 여러 변수들 중 'Pr(>|t|)'값이(=p-value) 0.05 이상이면 그 변수는 제외한다.
+```
+
+
+- 머신러닝, 인공지능
+  + 주 목적은 예측
+  + y = ax + b
+---
+Coefficients:
+             Estimate Std. Error t value Pr(>|t|)    
+(Intercept) 29.599855   1.229720  24.070  < 2e-16 ***
+disp        -0.041215   0.004712  -8.747 9.38e-10 ***
+var1                                     0.10
+var2                                     9.38e-10
+var3                                     3.14e-9
+---
+
+
+Residual standard error: 3.251 on 30 degrees of freedom
+Multiple R-squared:  0.7183,	Adjusted R-squared:  0.709 
+F-statistic: 76.51 on 1 and 30 DF,  p-value: 9.38e-10
+
+- Estimate값 해석 : y(mpg) = 29.599855 - 0.041215 x disp
+  + 우하향 하는 그래프
+
+- 에서 ANOVA (분산분석) 을 통해서 식1, 식2, 식3, ... 을 해서 괜찮은 식을 도출해야한다
+- p-value 값은 항상 0.05 미만
+식1 : y = disp + var1 + var2 + var3
+식2 : y = disp + var1 + var2
+식3 : y = disp + var1
+
+- Residual standard error: 3.251 on 30 degrees of freedom
+Multiple R-squared:  0.7183,	Adjusted R-squared:  0.709 에서
+- R-squared (결정계수) = 설명력 = 0 ~ 1
+- 1로 수렴할수록 설명력이 좋다
+- 'Multiple R-squared:   0.7183' 의 의미는 해당 변수들이 71.83% 만큼 영향을 준다는 뜻
+<br>
+
+### 회귀분석에서 고려해야할 것들
+1. 전체식의 p-value 값이 0.05 보다 작은가?
+2. ANOVA를 통해서 변하는 p-value 값이 0.05 미만인가를 체크한다.
+3. R-squared(결정계수)가 1에 가까운 변수 식을 찾는다.

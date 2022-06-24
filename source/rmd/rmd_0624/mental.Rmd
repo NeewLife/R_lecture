@@ -1,0 +1,245 @@
+---
+title: "한국인의 정신건강 분석"
+output:
+  html_document:
+    keep_md: true
+comments: false
+date: '2022-06-24'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+- 연구 1 : 삶의 만족도와 외로움이 자살충동에 주는 영향을 알아본다.
+- 연구 2 : 삶의 만족도와 외로움의 상관관계를 알아본다.
+- 연구 3 : 가족신뢰도, 경제적 안정, 건강상태가 삶의 만족도와 외로움에 주는 영향을 알아본다.
+- 연구 4 : 성, 연령, 지역에 따라 삶의 만족도에 차이가 있는지를 알아본다.
+
+- 데이터 불러오기 전 사전준비
+```{r}
+library(dplyr)
+library(ggplot2)
+```
+
+- spss 패키지 설치
+```{r}
+install.packages("foreign",repos = "http://cran.us.r-project.org")
+library(foreign)
+```
+- 데이터 불러오기
+```{r}
+mental <- read.spss("한국행정연구원_사회통합실태조사_데이터_2019.sav")
+class(mental)   # 데이터 유형 확인
+mental <- as.data.frame(mental)   #데이터프레임으로 변환하기
+class(mental)   # 데이터 유형 확인
+```
+
+- 분석 변수 추출 후 이름 변경하기
+```{r}
+mental <- mental %>% 
+  select(q32_2, q1_4, q32_1,q34_1, q52,d17,d1,d2,ara) %>% 
+  rename(#자살하고 싶은 생각이 드는 정도, 4점 척도
+         suicide=q32_2,
+         #요즘 느끼는 삶에 대한 만족도, 등현등간척도, 11점
+         satisfaction=q1_4,
+         #외롭다고 느끼는 정도, 4점 척도
+         loneliness=q32_1,
+         #본인의 가족에 대한 신뢰도, 4점 척도
+         family_belief=q34_1,
+         #본인 경제상황의 안정도, 등현등간척도, 0~10점
+         wealth=q52,
+         #건강상태, 5점
+         health=d17,
+         #성별
+         sex=d1,
+         #연령대, 5등 등급
+         age=d2,
+         #지역
+         area=ara)
+```
+- 4점, 5점, 11점 척도별 응답빈도 확인
+```{r}
+table(mental$suicide)
+table(mental$health)
+table(mental$satisfaction)
+# 모름/무응답 항목때문에 11점 척도인데 범주수는 12개로 나옴
+# 결측치가 없으므로 패스
+```
+
+- 범주 이름을 문자에서 숫자로 변환하기
+```{r}
+mental$suicide <- as.integer(mental$suicide)
+mental$satisfaction <- as.integer(mental$satisfaction)
+mental$loneliness <- as.integer(mental$loneliness)
+mental$family_belief <- as.integer(mental$family_belief)
+mental$wealth <- as.integer(mental$wealth)
+mental$health <- as.integer(mental$health)
+table(mental$suicide)
+table(mental$health)
+table(mental$satisfaction)
+```
+
+- satisfaction 변수는 범주가 0 ~ 10 점 척도인데, 1 ~ 11점으로 출력됨
+- 등현등간척도 변수(satisfaction, wealth)에서 -1점 보정작업
+```{r}
+mental$satisfaction <- mental$satisfaction-1
+mental$wealth <- mental$wealth-1
+table(mental$satisfaction)
+```
+
+- sex, age, area의 유형을 범주형에서 문자형으로 변경
+```{r}
+mental$age <- as.character(mental$age)
+mental$sex <- as.character(mental$sex)
+mental$area <- as.character(mental$area)
+table(mental$sex)
+table(mental$age)
+table(mental$area)
+```
+
+- age 항목의 19~29세, 60~69세를 20대, 60대로 변경
+```{r}
+mental$age <- ifelse(mental$age=="19~29세","20대",
+                     ifelse(mental$age=="60~69세","60대",mental$age))
+table(mental$age)
+```
+
+- 결측치, 이상치 확인하기
+```{r}
+summary(mental)
+```
+
+## 데이터 분석
+- 빈도분석
+  + 성별 빈도분석
+```{r}
+mental %>% 
+  group_by(sex) %>%                 # sex 변수로 분류
+  summarise(n=n()) %>%              # sex 변수의 데이터를 세어서 빈도를 n에 입력한다
+  mutate(total=sum(n),              # total에 데이터 빈도 합을 넣고
+         pct=round(n/total*100,1))  # 데이터 빈도를 소숫점 1번째 자리까지 백분율로 구한다
+```
+  
+  + 연령대별 빈도분석
+```{r}
+# 성별 빈도분석이랑 동일하다.
+mental %>% 
+  group_by(age) %>% 
+  summarise(n=n()) %>% 
+  mutate(total=sum(n),
+         pct=round(n/total*100,1))
+```
+  
+- 성별, 연령대 교차분석
+```{r}
+# 성별 연령대 별로 고르게 분포되어 있는가?
+table(mental$sex, mental$age)
+round(prop.table(table(mental$sex, mental$age),1)*100,1)
+chisq.test(mental$sex, mental$age)
+# p-value 값이 0.05 미만이므로 남녀 연령대 별로 분포비율은 다소 차이가 있다고 할 수 있다.
+```
+
+- 평균분석
+  + suicide, satisfaction, loneliness, family_belief, wealth, health 변수의 평균을 분석한다.
+```{r}
+mental %>% 
+  summarise(자살충동=mean(suicide),
+            삶의_만족도 = mean(satisfaction),
+            외로움=mean(loneliness),
+            가족신뢰도=mean(family_belief),
+            경제안정도=mean(wealth),
+            건강상태=mean(health))
+```
+  
+### 연구문제 1
+- 삶의 만족도와 외로움이 자살충동에 미치는 영향
+```{r}
+# 삶의 만족도와 외로움을 독립변수, 
+#             자살충동을 종속변수
+RA <- lm(data=mental, suicide~satisfaction+loneliness)
+summary(RA)
+```
+
+- 자살충동 = 1.035551 - 0.052583 x 만족도 + 0.367405 x 외로움  
+<br>  
+- 이 회귀식의 설명력은 0.2666 으로 낮은 편이다.
+### 연구문제2
+- 삶의 만족도와 외로움의 상관관계
+```{r}
+cor.test(mental$satisfaction, mental$loneliness)
+# p-value 값이 0.05 미만이므로 유의미한 통계이다.
+# 삶의 만족도와 외로움은 약한 수준에서 부적인 상관관계에 있다.
+# 즉, 삶의 만족도가 높아지면 외로움이 약간 줄어드는 관계이다.
+```
+
+### 연구문제3
+- 가족신뢰도, 경제안정도, 건강상태가 삶의 만족도와 외로움에 미치는 영향
+<br>  
+- 3개 독립변수가 삶의 만족도에 미치는 영향
+```{r}
+RA <- lm(data = mental, satisfaction~family_belief+wealth+health)
+summary(RA)
+# p-value 값이 0.05 미만이므로 유의미한 통계이다.
+```
+
+- 삶의 만족도 = 2.07613 + 0.36851 x 가족신뢰도 + 0.26016 x 경제안정도 + 0.36403 x 건강상태
+<br>  
+- 영향력은 차이가 있지만 가족신뢰도, 경제안정도, 건강상태가 좋아지면 모두 삶의 만족도에 긍정적인 영향을 끼친다.
+- 이 회귀식의 설명력은 0.1383 으로 매우 낮은 편이다.
+<br> 
+- 3개 독립변수가 외로움에 미치는 영향
+```{r}
+RA <- lm(data=mental, loneliness~family_belief+wealth+health)
+summary(RA)
+# p-value 값이 0.05 미만이므로 유의미한 통계이다.
+```
+
+- 외로움 = 3.652247 - 0.220274 x 가족신뢰도 - 0.072686 x 경제안정도 - 0.191313 x 건강상태
+<br>  
+- 영향력은 다르지만 가족신뢰도, 경제안정도, 건강상태가 나빠질 수록 외로움도 커진다.
+- 이 회귀식의 설명력은 0.1154로 매우 낮은편이다.
+<br>  
+### 연구문제4
+- 성, 연령, 지역별 삶의 만족도 차이
+<br>  
+- 성별로 삶의 만족도에서 차이가 있는지 독립표본 t 검정으로 알아본다.
+```{r}
+t.test(data=mental, satisfaction~sex)
+# p-value 값이 0.05 미만이므로 유의미한 통계이다.
+```
+
+- 남성 평균은 5.962852, 여성 평균은 6.110554 이므로 여성의 만족도가 남성보다 높다고 할 수 있다.
+<br>  
+- 연령대별 삶의 만족도 차이
+```{r}
+mental %>% 
+  group_by(age) %>% 
+  summarise(삶의_만족도_평균=mean(satisfaction)) %>% 
+  arrange(desc(삶의_만족도_평균))
+```
+
+- 30대가 평균 6.13점으로 가장 높고 60대가 되면 삶의 만족도가 낮아진다.
+<br>  
+
+- 지역별 삶의 만족도 분석
+```{r}
+area_satisfaction <- mental %>% 
+  group_by(area) %>% 
+  summarise(m=mean(satisfaction)) %>% 
+  arrange(desc(m))
+```
+- 그래프로 나타내기
+```{r}
+library(ggplot2)
+ggplot(data=area_satisfaction, aes(x = reorder(area, m),y=m))+
+  geom_col()+
+  ggtitle("지역별 만족도") + 
+  labs(
+    x = "지역",
+    y = "만족도") +
+  coord_flip()
+```
+
+
+
